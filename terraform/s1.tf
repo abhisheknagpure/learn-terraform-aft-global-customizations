@@ -7,7 +7,6 @@ version = "~>5.87"
 }
 
 provider "aws" {
-alias = "alias_cns_onboarding"
 use_fips_endpoint= false  
 }
 
@@ -127,7 +126,7 @@ data "aws_organizations_organization" "roots" {}
 resource "aws_iam_role" "sentinelone_cns_access_role_cns_onboarding" {
 name = var.role_name
 path = var.iam_path
-provider = aws.alias_cns_onboarding
+ 
 assume_role_policy = jsonencode({
 Version = "2012-10-17"
 Statement = [
@@ -160,7 +159,7 @@ count = local.is_cds_integration_enabled ? 1 : 0
 
 name = "s1-cds-cross-account-scan-${var.identifier}"
 path = var.iam_path
-provider = aws.alias_cns_onboarding
+ 
 assume_role_policy = jsonencode({
 Version = "2012-10-17"
 Statement = [
@@ -190,7 +189,7 @@ permissions_boundary = var.permissions_boundary_arn != "" ? var.permissions_boun
 
 resource "aws_iam_policy" "cross_account_scan_policy_cns_onboarding" {
 count = local.is_cds_integration_enabled ? 1 : 0
-provider = aws.alias_cns_onboarding
+ 
 policy = jsonencode({
 Version = "2012-10-17"
 Statement = [
@@ -227,12 +226,12 @@ resource "aws_iam_role_policy_attachment" "cross_account_scan_role_policy_attach
 count = local.is_cds_integration_enabled ? 1 : 0
 role       = aws_iam_role.cross_account_scan_role_cns_onboarding[0].name
 policy_arn = aws_iam_policy.cross_account_scan_policy_cns_onboarding[0].arn
-provider = aws.alias_cns_onboarding
+ 
 }
 resource "aws_cloudformation_stack_set" "sentinelone_stack_set_cns_onboarding" {
 count = local.is_organization_onboarding_selected ? 1 : 0
 name = "s1-cnapp-initial-stackset-${var.identifier}"
-provider = aws.alias_cns_onboarding
+ 
 managed_execution {
 active = true
 }
@@ -881,7 +880,7 @@ region_concurrency_type = "PARALLEL"
 
 resource "aws_cloudformation_stack_set_instance" "stack_instances_group_has_excluded_accounts_cns_onboarding" {
 count = local.has_excluded_accounts ? 1 : 0
-provider = aws.alias_cns_onboarding
+ 
 deployment_targets {
 account_filter_type =  "DIFFERENCE"
 accounts = split(",", var.excluded_accounts)
@@ -899,7 +898,7 @@ stack_set_name = aws_cloudformation_stack_set.sentinelone_stack_set_cns_onboardi
 
 resource "aws_cloudformation_stack_set_instance" "stack_instances_group_has_no_excluded_accounts_cns_onboarding" {
 count = local.has_no_excluded_accounts ? 1 : 0
-provider = aws.alias_cns_onboarding
+ 
 deployment_targets {
 organizational_unit_ids = [data.aws_organizations_organization.roots.roots[0].id]
 }
@@ -915,7 +914,7 @@ stack_set_name = aws_cloudformation_stack_set.sentinelone_stack_set_cns_onboardi
 resource "aws_iam_policy" "sentinelone_cns_scanner_supplement_read_policy_cns_onboarding" {
 description = "Permissions for SentinelOne CNS scanner"
 path        = var.iam_path
-provider = aws.alias_cns_onboarding
+ 
 policy = jsonencode({
 Version = "2012-10-17"
 Statement = [
@@ -1064,14 +1063,14 @@ Resource = "*"
 resource "aws_iam_role_policy_attachment" "sentinelone_cns_scanner_supplement_read_policy_attachment_cns_onboarding" {
 role       = aws_iam_role.sentinelone_cns_access_role_cns_onboarding.name
 policy_arn = aws_iam_policy.sentinelone_cns_scanner_supplement_read_policy_cns_onboarding.arn
-provider = aws.alias_cns_onboarding
+ 
 }
 
 resource "aws_iam_policy" "sentinelone_cns_auto_remediation_policy_cns_onboarding" {
 count       = local.auto_remediation_enabled ? 1 : 0
 description = "Allow SentinelOne CNS access to auto-remediate issues from SentinelOne CNS dashboard"
 path        = var.iam_path
-provider = aws.alias_cns_onboarding
+ 
 policy = jsonencode({
 Version = "2012-10-17"
 Statement = [
@@ -1168,14 +1167,14 @@ resource "aws_iam_role_policy_attachment" "sentinelone_cns_auto_remediation_poli
 count     = local.auto_remediation_enabled ? 1 : 0
 role      = aws_iam_role.sentinelone_cns_access_role_cns_onboarding.name
 policy_arn = aws_iam_policy.sentinelone_cns_auto_remediation_policy_cns_onboarding[0].arn
-provider = aws.alias_cns_onboarding
+ 
 }
 
 resource "aws_iam_policy" "sentinelone_cns_snapshot_scanning_policy_cns_onboarding" {
 count       = local.snapshot_scanning_enabled ? 1 : 0
 description = "Allow SentinelOne CNS access to create and share VM snapshots"
 path        = var.iam_path
-provider = aws.alias_cns_onboarding
+ 
 policy = jsonencode({
 Version = "2012-10-17"
 Statement = [
@@ -1279,14 +1278,14 @@ Resource = "arn:${data.aws_partition.current.partition}:kms:*:*:alias/sentinelOn
 }
 
 resource "aws_iam_role_policy_attachment" "sentinelone_cns_snapshot_scanning_policy_attachment_cns_onboarding" {
-provider = aws.alias_cns_onboarding
+ 
 count     = local.snapshot_scanning_enabled ? 1 : 0
 role      = aws_iam_role.sentinelone_cns_access_role_cns_onboarding.name
 policy_arn = aws_iam_policy.sentinelone_cns_snapshot_scanning_policy_cns_onboarding[0].arn
 }
 
 resource "aws_iam_policy" "list_regions_policy_cns_onboarding" {
-provider = aws.alias_cns_onboarding
+ 
 description = "Policy to allow listing AWS regions"
 path        = var.iam_path
 
@@ -1307,7 +1306,7 @@ Resource = [
 }
 
 resource "aws_iam_role_policy_attachment" "list_regions_policy_attachment_cns_onboarding" {
-provider = aws.alias_cns_onboarding
+ 
 role       = aws_iam_role.sentinelone_cns_access_role_cns_onboarding.name
 policy_arn = aws_iam_policy.list_regions_policy_cns_onboarding.arn
 }
