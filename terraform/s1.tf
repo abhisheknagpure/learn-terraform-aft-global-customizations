@@ -6,10 +6,6 @@ version = "~>5.87"
 }
 }
 
-provider "aws" {
-use_fips_endpoint= false  
-}
-
 variable "identifier" {
 description = "A unique string to resolve conflicts with existing resources. Do not change this value."
 type        = string
