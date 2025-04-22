@@ -1,1 +1,4 @@
-
+module "vpc" {
+  source = "./cloudtrail"
+  ...
+}
