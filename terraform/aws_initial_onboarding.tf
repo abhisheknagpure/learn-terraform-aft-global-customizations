@@ -29,7 +29,9 @@
 
 
 
-
+data "aws_organizations_organization" "roots" {
+count = local.is_organization_onboarding_selected ? 1 : 0
+}
 
 resource "aws_iam_role" "sentinelone_cns_access_role_cns_onboarding" {
 name = var.role_name
@@ -64,7 +66,7 @@ permissions_boundary = var.permissions_boundary_arn != "" ? var.permissions_boun
 resource "aws_iam_role" "cross_account_scan_role_cns_onboarding" {
 count = local.is_cds_integration_enabled ? 1 : 0
 
-name = "s1-cds-cross-account-scan-${var.identifier}"
+name = "s1-cds-${var.identifier}-cross-account-scan-role"
 path = var.iam_path
 assume_role_policy = jsonencode({
 Version = "2012-10-17"
@@ -272,7 +274,7 @@ crossAccountScanRole = {
 Condition = "IsCDSIntegrationEnabled"
 Type = "AWS::IAM::Role"
 Properties = {
-RoleName = "s1-cds-cross-account-scan-${var.identifier}"
+RoleName = "s1-cds-${var.identifier}-cross-account-scan-role"
 Path = {
 "Ref" = "iamPath"
 }
@@ -300,7 +302,7 @@ StringEquals = {
 "aws:ResourceOrgID" = "$${aws:PrincipalOrgID}"
 }
 StringLike = {
-"aws:PrincipalArn": "arn:aws:iam::*:role/s1-78909-*-service-*-role"
+"aws:PrincipalArn": "arn:aws:iam::*:role/s1-82374-*-service-*-role"
 }
 }
 Action = "sts:AssumeRole"
@@ -315,6 +317,7 @@ Value= "cds"
 }
 ]
 Policies =[{
+PolicyName = "s1-cds-scan-policy-${data.aws_region.current.name}-${var.identifier}"
 PolicyDocument = jsonencode({
 Version = "2012-10-17"
 Statement = [
@@ -786,7 +789,7 @@ count = local.has_excluded_accounts ? 1 : 0
 deployment_targets {
 account_filter_type = "DIFFERENCE"
 accounts = split(",", var.excluded_accounts)
-organizational_unit_ids = [data.aws_organizations_organization.roots.roots[0].id]
+organizational_unit_ids = [data.aws_organizations_organization.roots[0].roots[0].id]
 }
 operation_preferences {
 failure_tolerance_count = 24
@@ -801,7 +804,7 @@ stack_set_name = aws_cloudformation_stack_set.sentinelone_stack_set_cns_onboardi
 resource "aws_cloudformation_stack_set_instance" "stack_instances_group_has_no_excluded_accounts_cns_onboarding" {
 count = local.has_no_excluded_accounts ? 1 : 0
 deployment_targets {
-organizational_unit_ids = [data.aws_organizations_organization.roots.roots[0].id]
+organizational_unit_ids = [data.aws_organizations_organization.roots[0].roots[0].id]
 }
 operation_preferences {
 failure_tolerance_count = 24

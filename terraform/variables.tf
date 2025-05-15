@@ -1,7 +1,7 @@
 variable "identifier" {
 description = "A unique string to resolve conflicts with existing resources. Do not change this value."
 type = string
-default = "2199176901866569658"
+default = "2215028619070184314"
 validation {
 condition = can(regex("^[0-9]*$", var.identifier))
 error_message = "Must be string with no spaces."
@@ -10,7 +10,7 @@ error_message = "Must be string with no spaces."
 variable "role_name" {
 description = "The name of IAM role to be created in AWS account. Do not change this value."
 type = string
-default = "s1-cns-audit-2199176901866569658"
+default = "s1-cns-audit-2215028619070184314"
 validation {
 condition = can(regex("^[a-z0-9-]*$", var.role_name))
 error_message = "Must be lowercase or numbers, no spaces."
@@ -33,7 +33,7 @@ default = ""
 variable "external_id" {
 description = "The External ID is auto-generated. Do not change this value."
 type = string
-default = "02c715d72e193139ed5fb1fcae8a243571269a077e95ce2eaab61ad495830154"
+default = "6da99f981ef2c1b3ad8269f3ce62b04f52f35692c15609214b8d037913209236"
 validation {
 condition = can(regex("^[a-z0-9]*$", var.external_id))
 error_message = "Must be lowercase or numbers, no spaces."
