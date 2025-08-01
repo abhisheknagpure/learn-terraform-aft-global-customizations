@@ -1,7 +1,7 @@
 variable "identifier" {
 description = "A unique string to resolve conflicts with existing resources. Do not change this value."
 type = string
-default = "2215028619070184314"
+default = "2271591808821702286"
 validation {
 condition = can(regex("^[0-9]*$", var.identifier))
 error_message = "Must be string with no spaces."
@@ -10,7 +10,7 @@ error_message = "Must be string with no spaces."
 variable "role_name" {
 description = "The name of IAM role to be created in AWS account. Do not change this value."
 type = string
-default = "s1-cns-audit-2215028619070184314"
+default = "s1-cns-audit-2271591808821702286"
 validation {
 condition = can(regex("^[a-z0-9-]*$", var.role_name))
 error_message = "Must be lowercase or numbers, no spaces."
@@ -33,7 +33,7 @@ default = ""
 variable "external_id" {
 description = "The External ID is auto-generated. Do not change this value."
 type = string
-default = "6da99f981ef2c1b3ad8269f3ce62b04f52f35692c15609214b8d037913209236"
+default = "6c7028be1f670a302ea6f5c805525628d7ce3fbbe02412a54d80c7ab701d9224"
 validation {
 condition = can(regex("^[a-z0-9]*$", var.external_id))
 error_message = "Must be lowercase or numbers, no spaces."
@@ -42,7 +42,7 @@ error_message = "Must be lowercase or numbers, no spaces."
 variable "assume_role_service_account" {
 description = "SentinelOne CNS Service Account which will perform sts:assumeRole. Do not change this value."
 type = string
-default = "arn:aws:iam::613274416560:user/sentinelone-cns-service-account-dev"
+default = "arn:aws:iam::905418275138:user/sentinelone-cns-us-east-1-auto"
 }
 variable "is_organization_onboarding" {
 description = "Create the stackset in case of Organization Onboarding"

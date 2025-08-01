@@ -121,7 +121,8 @@ Effect = "Allow"
 Action = [
 "s3:PutBucketNotification",
 "s3:ListBucket",
-"s3:GetBucketNotification"
+"s3:GetBucketNotification",
+"s3:GetBucketTagging"
 ]
 Resource = "arn:${data.aws_partition.current.partition}:s3:::*"
 }
@@ -267,88 +268,6 @@ ManagedPolicyArns = [
 "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
 "arn:${data.aws_partition.current.partition}:iam::aws:policy/AWSCloudFormationReadOnlyAccess"
 ]
-}
-}
-
-crossAccountScanRole = {
-Condition = "IsCDSIntegrationEnabled"
-Type = "AWS::IAM::Role"
-Properties = {
-RoleName = "s1-cds-${var.identifier}-cross-account-scan-role"
-Path = {
-"Ref" = "iamPath"
-}
-"PermissionsBoundary" = {
-"Fn::If" = [
-"HasPermissionsBoundary",
-{
-"Ref": "permissionsBoundaryArn"
-},
-{
-"Ref": "AWS::NoValue"
-}
-]
-}
-AssumeRolePolicyDocument = jsonencode({
-Version = "2012-10-17"
-Statement = [
-{
-Effect = "Allow"
-Principal = {
-AWS = "*"
-}
-Condition = {
-StringEquals = {
-"aws:ResourceOrgID" = "$${aws:PrincipalOrgID}"
-}
-StringLike = {
-"aws:PrincipalArn": "arn:aws:iam::*:role/s1-82374-*-service-*-role"
-}
-}
-Action = "sts:AssumeRole"
-}
-]
-})
-MaxSessionDuration = 43200
-Tags = [
-{
-Key= "s1service",
-Value= "cds"
-}
-]
-Policies =[{
-PolicyName = "s1-cds-scan-policy-${data.aws_region.current.name}-${var.identifier}"
-PolicyDocument = jsonencode({
-Version = "2012-10-17"
-Statement = [
-{
-Sid = "CDSObjectsAccess"
-Effect = "Allow"
-Action = [
-"s3:DeleteObjectTagging",
-"s3:ReplicateObject",
-"s3:PutObject",
-"s3:GetObject",
-"s3:GetObjectAttributes",
-"s3:GetObjectTagging",
-"s3:PutObjectTagging",
-"s3:DeleteObject"
-]
-Resource = "arn:${data.aws_partition.current.partition}:s3:::*"
-},
-{
-Sid = "CDSBucketAccess"
-Effect = "Allow"
-Action = [
-"s3:PutBucketNotification",
-"s3:ListBucket",
-"s3:GetBucketNotification"
-]
-Resource = "arn:${data.aws_partition.current.partition}:s3:::*"
-}
-]
-})
-}]
 }
 }
 
